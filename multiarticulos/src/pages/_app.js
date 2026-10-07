@@ -1,5 +1,13 @@
 import Head from "next/head";
+import { Oswald } from "next/font/google";
 import "@/styles/globals.css";
+import { AuthProvider } from "@/context/AuthContext";
+
+const display = Oswald({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  variable: "--font-display",
+});
 
 export default function App({ Component, pageProps }) {
   return (
@@ -11,7 +19,11 @@ export default function App({ Component, pageProps }) {
           content="Vestiq · Catálogo y carrito con Next.js + Firebase"
         />
       </Head>
-      <Component {...pageProps} />
+      <AuthProvider>
+        <div className={display.variable}>
+          <Component {...pageProps} />
+        </div>
+      </AuthProvider>
     </>
   );
 }

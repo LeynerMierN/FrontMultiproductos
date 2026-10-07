@@ -10,16 +10,16 @@ export function Faq() {
       <p className="text-center text-xs font-semibold uppercase tracking-widest text-neutral-500">
         Preguntas frecuentes
       </p>
-      <h2 className="mt-1 text-center text-2xl font-bold tracking-tight">
-        Lo que necesitas saber
+      <h2 className="font-display mt-1 text-center text-3xl font-bold md:text-4xl">
+        Ayuda
       </h2>
-      <div className="mt-5 grid gap-2">
+      <div className="mt-5 grid gap-3">
         {FAQS.map((f, i) => {
           const isOpen = open === i;
           return (
             <div
               key={f.q}
-              className="overflow-hidden rounded-2xl border border-neutral-200 bg-white"
+              className="border border-charcoal/10 bg-paper shadow-soft"
             >
               <button
                 onClick={() => setOpen(isOpen ? -1 : i)}

@@ -3,15 +3,16 @@ import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0",
+  "font-display inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-none text-sm font-semibold uppercase tracking-wider transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sand disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-neutral-900 text-white hover:bg-neutral-700",
-        secondary: "bg-neutral-100 text-neutral-900 hover:bg-neutral-200",
-        outline: "border border-neutral-200 bg-white hover:bg-neutral-50",
-        ghost: "hover:bg-neutral-100 text-neutral-600",
-        destructive: "bg-red-600 text-white hover:bg-red-500",
+        default: "bg-charcoal text-cream hover:bg-sand hover:text-charcoal",
+        sand: "bg-sand text-charcoal hover:bg-sand-dark",
+        secondary: "bg-[#e9e4d8] text-charcoal hover:bg-[#dcd4c2]",
+        outline: "border border-charcoal bg-transparent text-charcoal hover:bg-charcoal hover:text-cream",
+        ghost: "hover:bg-black/5 text-neutral-600",
+        destructive: "bg-red-700 text-cream hover:bg-red-600",
       },
       size: {
         default: "h-10 px-5",

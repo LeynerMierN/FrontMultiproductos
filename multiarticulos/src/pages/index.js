@@ -2,16 +2,21 @@ import { useMemo, useState } from "react";
 import { Loader2, TriangleAlert, PackageSearch } from "lucide-react";
 import { useProducts } from "@/hooks/useProducts";
 import { useCart } from "@/hooks/useCart";
+import { useCartSync } from "@/hooks/useCartSync";
+import { useAuth } from "@/context/AuthContext";
 import { PromoBar } from "@/components/shop/PromoBar";
 import { Header } from "@/components/shop/Header";
-import { Hero } from "@/components/shop/Hero";
+import { HeroCarousel } from "@/components/shop/HeroCarousel";
 import { FeaturedRow } from "@/components/shop/FeaturedRow";
+import { CategorySplit } from "@/components/shop/CategorySplit";
+import { FilterSection } from "@/components/shop/FilterSection";
 import { Perks } from "@/components/shop/Perks";
 import { HowItWorks } from "@/components/shop/HowItWorks";
 import { Testimonials } from "@/components/shop/Testimonials";
 import { Faq } from "@/components/shop/Faq";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { CartDrawer } from "@/components/shop/CartDrawer";
+import { ChatWidget } from "@/components/shop/ChatWidget";
 import { Footer } from "@/components/shop/Footer";
 import { Button } from "@/components/ui/button";
 
@@ -31,22 +36,31 @@ const SORTS = [
 
 export default function Home() {
   const { products, loading, error } = useProducts();
-  const cart = useCart(products);
+  const { user } = useAuth();
+  const cart = useCart(products, user?.uid || null);
+  useCartSync(user?.uid || null, cart.rawItems);
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState("all");
   const [sort, setSort] = useState("new");
+  const [gender, setGender] = useState("all");
+  const [subcat, setSubcat] = useState("all");
 
-  function goCatalog(next) {
-    if (next === "new") {
-      setFilter("all");
-      setSort("new");
-    } else {
-      setFilter(next);
-    }
+  function goCategory(g, s) {
+    setGender(g);
+    setSubcat(s);
     document
       .getElementById("catalogo")
       ?.scrollIntoView({ behavior: "smooth" });
   }
+
+  const counts = useMemo(() => {
+    const c = {};
+    for (const p of products) {
+      const g = p.gender || "unisex";
+      c[g] = (c[g] || 0) + 1;
+    }
+    return c;
+  }, [products]);
 
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
@@ -59,15 +73,19 @@ export default function Home() {
     if (filter === "low")
       list = list.filter((p) => (p.cantidad ?? 0) > 0 && (p.cantidad ?? 0) <= 5);
     if (filter === "out") list = list.filter((p) => (p.cantidad ?? 0) <= 0);
+    if (gender !== "all")
+      list = list.filter((p) => (p.gender || "unisex") === gender);
+    if (subcat !== "all")
+      list = list.filter((p) => (p.subcategory || "") === subcat);
     if (sort === "asc") list.sort((a, b) => (a.precio || 0) - (b.precio || 0));
     if (sort === "desc") list.sort((a, b) => (b.precio || 0) - (a.precio || 0));
     if (sort === "name")
       list.sort((a, b) => String(a.nombre).localeCompare(String(b.nombre)));
     return list;
-  }, [products, q, filter, sort]);
+  }, [products, q, filter, sort, gender, subcat]);
 
   return (
-    <div className="min-h-screen bg-white text-neutral-900">
+    <div className="min-h-screen bg-cream text-ink">
       <PromoBar />
       <Header
         q={q}
@@ -75,15 +93,16 @@ export default function Home() {
         cartCount={cart.count}
         onCartOpen={() => cart.setOpen(true)}
       />
-      <Hero count={products.length} onSelectTile={goCatalog} />
+      <HeroCarousel onSelect={goCategory} />
+      <CategorySplit counts={counts} onSelect={goCategory} />
       <FeaturedRow products={products} loading={loading} onAdd={cart.add} />
 
       <main id="catalogo" className="mx-auto max-w-6xl scroll-mt-24 px-4 pt-12">
-        <p className="text-xs font-semibold uppercase tracking-widest text-neutral-500">
+        <p className="font-display text-xs font-semibold tracking-[0.25em] text-neutral-500">
           Catálogo completo
         </p>
-        <h2 className="mt-1 text-2xl font-bold tracking-tight">
-          Explora todos los artículos
+        <h2 className="font-display mt-1 text-3xl font-bold md:text-4xl">
+          Explora todo
         </h2>
 
         {error && (
@@ -98,7 +117,22 @@ export default function Home() {
           </div>
         )}
 
-        <div className="mt-5 flex flex-wrap items-center gap-2">
+        <div className="mt-5">
+          <FilterSection
+            gender={gender}
+            subcat={subcat}
+            onGender={setGender}
+            onSubcat={setSubcat}
+            onClear={() => {
+              setGender("all");
+              setSubcat("all");
+              setFilter("all");
+              setQ("");
+            }}
+          />
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center gap-2">
           {FILTERS.map((f) => (
             <Button
               key={f.id}
@@ -112,7 +146,7 @@ export default function Home() {
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value)}
-            className="ml-auto h-8 rounded-full border border-neutral-200 bg-white px-3 text-xs font-medium"
+            className="ml-auto h-8 border border-charcoal/30 bg-paper px-3 text-xs font-medium"
           >
             {SORTS.map((s) => (
               <option key={s.id} value={s.id}>
@@ -128,7 +162,7 @@ export default function Home() {
               <Loader2 className="animate-spin" /> Cargando catálogo…
             </p>
           ) : filtered.length === 0 ? (
-            <div className="flex flex-col items-center gap-2 rounded-2xl border border-dashed py-16 text-center">
+            <div className="flex flex-col items-center gap-2 border border-dashed border-charcoal/25 bg-paper py-16 text-center">
               <PackageSearch className="h-8 w-8 text-neutral-300" />
               <p className="font-semibold">Sin resultados</p>
               <p className="text-sm text-neutral-500">
@@ -153,6 +187,8 @@ export default function Home() {
       <Faq />
 
       <Footer />
+
+      <ChatWidget />
 
       <CartDrawer
         open={cart.open}

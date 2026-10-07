@@ -1,27 +1,60 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-const KEY = "vestiq-cart-v1";
+const GUEST_KEY = "vestiq-cart-guest";
+const keyFor = (uid) => (uid ? `vestiq-cart-${uid}` : GUEST_KEY);
 
-function read() {
+function readKey(key) {
   if (typeof window === "undefined") return [];
   try {
-    return JSON.parse(localStorage.getItem(KEY) || "[]");
+    const v = JSON.parse(localStorage.getItem(key) || "[]");
+    return Array.isArray(v) ? v : [];
   } catch {
     return [];
   }
 }
 
-export function useCart(products = []) {
+function mergeCarts(a, b) {
+  const map = new Map();
+  for (const i of [...a, ...b]) {
+    if (!i?.id) continue;
+    map.set(i.id, { id: i.id, qty: (map.get(i.id)?.qty || 0) + (i.qty || 0) });
+  }
+  return [...map.values()];
+}
+
+// Carrito por usuario: cada sesión (invitado o uid de Google) tiene su
+// propia llave en localStorage. Al iniciar sesión, el carrito de invitado
+// se fusiona con el del usuario.
+export function useCart(products = [], uid = null) {
   const [items, setItems] = useState([]); // [{ id, qty }]
   const [open, setOpen] = useState(false);
+  const uidRef = useRef(uid);
 
+  // Cambió la sesión (login/logout): carga el carrito correspondiente.
   useEffect(() => {
-    setItems(read());
+    const prevUid = uidRef.current;
+    if (prevUid === uid) return;
+    setItems((current) => {
+      // Si acaba de iniciar sesión y había algo como invitado, fusionar.
+      if (uid && !prevUid && current.length > 0) {
+        const mine = readKey(keyFor(uid));
+        return mergeCarts(mine, current);
+      }
+      return readKey(keyFor(uid));
+    });
+    uidRef.current = uid;
+  }, [uid]);
+
+  // Carga inicial.
+  useEffect(() => {
+    setItems(readKey(keyFor(uidRef.current)));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Persistir en la llave de la sesión actual.
   useEffect(() => {
     try {
-      localStorage.setItem(KEY, JSON.stringify(items));
+      localStorage.setItem(keyFor(uidRef.current), JSON.stringify(items));
     } catch {}
   }, [items]);
 
@@ -70,5 +103,5 @@ export function useCart(products = []) {
     [detailed]
   );
 
-  return { items: detailed, count, total, open, setOpen, add, setQty, remove, clear };
+  return { items: detailed, rawItems: items, count, total, open, setOpen, add, setQty, remove, clear };
 }

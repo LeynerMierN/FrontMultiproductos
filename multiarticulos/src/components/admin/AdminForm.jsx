@@ -8,11 +8,14 @@ import {
   uploadProductPhoto,
   isCloudinaryConfigured,
 } from "@/lib/cloudinary";
+import { GENDERS, SUBCATEGORIES } from "@/config/site";
 
 export function AdminForm({ onAdd, disabled }) {
   const [nombre, setNombre] = useState("");
   const [precio, setPrecio] = useState("");
   const [cantidad, setCantidad] = useState("1");
+  const [gender, setGender] = useState("unisex");
+  const [subcategory, setSubcategory] = useState("");
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState("");
   const [imageLink, setImageLink] = useState("");
@@ -50,10 +53,12 @@ export function AdminForm({ onAdd, disabled }) {
     try {
       let imageUrl = imageLink.trim();
       if (file) imageUrl = await uploadProductPhoto(file);
-      await onAdd({ nombre, precio, cantidad, imageUrl });
+      await onAdd({ nombre, precio, cantidad, imageUrl, gender, subcategory });
       setNombre("");
       setPrecio("");
       setCantidad("1");
+      setGender("unisex");
+      setSubcategory("");
       clearImage();
     } catch (err) {
       setFormError(err.message || "No se pudo guardar.");
@@ -126,6 +131,41 @@ export function AdminForm({ onAdd, disabled }) {
               onChange={(e) => setImageLink(e.target.value)}
               disabled={disabled || saving || Boolean(file)}
             />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="grid gap-1.5">
+              <Label htmlFor="gender">Categoría</Label>
+              <select
+                id="gender"
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
+                disabled={disabled || saving}
+                className="flex h-10 w-full rounded-none border border-neutral-900 bg-white px-3 text-sm"
+              >
+                {GENDERS.map((g) => (
+                  <option key={g.id} value={g.id}>
+                    {g.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="grid gap-1.5">
+              <Label htmlFor="subcategory">Subcategoría</Label>
+              <select
+                id="subcategory"
+                value={subcategory}
+                onChange={(e) => setSubcategory(e.target.value)}
+                disabled={disabled || saving}
+                className="flex h-10 w-full rounded-none border border-neutral-900 bg-white px-3 text-sm"
+              >
+                <option value="">Sin subcategoría</option>
+                {SUBCATEGORIES.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="grid gap-1.5">

@@ -9,12 +9,53 @@ export const PROMOS = [
 ];
 
 export const HERO = {
-  eyebrow: "Catálogo actualizado en tiempo real",
+  eyebrow: "Concept store · Moda y perfumería",
   title: "Todo lo que buscas, en un solo lugar.",
   subtitle:
     "Explora el catálogo, agrega al carrito y haz tu pedido en minutos. Stock y precios siempre al día.",
   primaryCta: { label: "Ver catálogo", href: "#catalogo" },
   secondaryCta: { label: "Ver destacados", href: "#destacados" },
+};
+
+// Carrusel principal. Pega la URL de cada imagen (ideal 1920×1080,
+// súbela a Cloudinary) en `image`. Si está vacía se usa fondo editorial.
+export const HERO_SLIDES = [
+  {
+    id: "perfumeria",
+    eyebrow: "Perfumería de inspiración",
+    title: "Tu aroma. Tu presencia.",
+    subtitle: "Fragancias inspiradas en diseñadores, sin pagar de más.",
+    image: "",
+    ctaLabel: "Explorar fragancias",
+    gender: "all",
+    subcat: "fragancias",
+  },
+  {
+    id: "mujer",
+    eyebrow: "Moda · Mujer",
+    title: "Viste tu actitud",
+    subtitle: "Camisetas, jeans, tenis y más para cada versión de ti.",
+    image: "",
+    ctaLabel: "Ver moda mujer",
+    gender: "mujer",
+    subcat: "all",
+  },
+  {
+    id: "hombre",
+    eyebrow: "Moda · Hombre",
+    title: "Estilo que se nota",
+    subtitle: "Camisas, pantalones, bermudas y calzado con carácter.",
+    image: "",
+    ctaLabel: "Ver moda hombre",
+    gender: "hombre",
+    subcat: "all",
+  },
+];
+
+// Imágenes del split Mujer/Hombre (fondo). Vacío = degradado editorial.
+export const CATEGORY_IMAGES = {
+  mujer: "",
+  hombre: "",
 };
 
 export const PERKS = [
@@ -90,6 +131,47 @@ export const CONTACT = {
 };
 
 export const FREE_SHIPPING_THRESHOLD = 99900;
+
+export const GENDERS = [
+  { id: "mujer", label: "Mujer" },
+  { id: "hombre", label: "Hombre" },
+  { id: "unisex", label: "Unisex" },
+];
+
+export const SUBCATEGORIES = [
+  { id: "fragancias", label: "Fragancias" },
+  { id: "tenis", label: "Tenis" },
+  { id: "zapatos", label: "Zapatos" },
+  { id: "camisas", label: "Camisas" },
+  { id: "camisetas", label: "Camisetas" },
+  { id: "pantalones", label: "Pantalones" },
+  { id: "bermudas", label: "Bermudas" },
+];
+
+// Grupos del filtro "EXPLORA TODO". Estructura lista para venir de
+// Firestore: [{ id, label, featured, items: [subcatIds] }].
+export const FILTER_GROUPS = [
+  {
+    id: "ropa",
+    label: "Ropa y Calzado",
+    featured: false,
+    items: ["camisas", "camisetas", "pantalones", "tenis", "zapatos", "bermudas"],
+  },
+  {
+    id: "perfumeria",
+    label: "Perfumería",
+    featured: true,
+    items: ["fragancias"],
+  },
+];
+
+export function genderLabel(id) {
+  return GENDERS.find((g) => g.id === id)?.label || "Sin categoría";
+}
+
+export function subcategoryLabel(id) {
+  return SUBCATEGORIES.find((s) => s.id === id)?.label || "";
+}
 
 export function whatsappLink(text) {
   const num = CONTACT.whatsapp.replace(/\D/g, "");

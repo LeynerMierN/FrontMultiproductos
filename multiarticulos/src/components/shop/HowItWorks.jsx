@@ -6,19 +6,19 @@ export function HowItWorks() {
       <p className="text-xs font-semibold uppercase tracking-widest text-neutral-500">
         Así funciona
       </p>
-      <h2 className="mt-1 text-2xl font-bold tracking-tight">
-        Comprar aquí es fácil
+      <h2 className="font-display mt-1 text-3xl font-bold md:text-4xl">
+        Cómo comprar
       </h2>
-      <div className="mt-5 grid gap-3 md:grid-cols-3">
+      <div className="mt-5 grid gap-4 md:grid-cols-3">
         {STEPS.map((s) => (
           <div
             key={s.n}
-            className="rounded-2xl border border-neutral-200 bg-neutral-50 p-5"
+            className="border border-charcoal/10 bg-paper p-6 shadow-soft transition-shadow duration-300 hover:shadow-lift"
           >
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-900 text-sm font-bold text-white">
+            <span className="font-display flex h-9 w-9 items-center justify-center bg-charcoal text-base font-bold text-cream">
               {s.n}
             </span>
-            <h3 className="mt-3 font-bold">{s.title}</h3>
+            <h3 className="font-display mt-3 text-lg font-semibold">{s.title}</h3>
             <p className="mt-1 text-sm text-neutral-600">{s.text}</p>
           </div>
         ))}

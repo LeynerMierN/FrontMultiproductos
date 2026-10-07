@@ -7,14 +7,14 @@ export function Testimonials() {
       <p className="text-xs font-semibold uppercase tracking-widest text-neutral-500">
         Comunidad Vestiq
       </p>
-      <h2 className="mt-1 text-2xl font-bold tracking-tight">
-        Lo que dicen nuestros clientes
+      <h2 className="font-display mt-1 text-3xl font-bold md:text-4xl">
+        La comunidad opina
       </h2>
       <div className="mt-5 grid gap-3 md:grid-cols-3">
         {TESTIMONIALS.map((t) => (
           <figure
             key={t.name}
-            className="flex flex-col gap-3 rounded-2xl border border-neutral-200 bg-white p-5"
+            className="flex flex-col gap-3 border border-charcoal/10 bg-paper p-5 shadow-soft transition-shadow duration-300 hover:shadow-lift"
           >
             <span className="flex gap-0.5">
               {Array.from({ length: 5 }).map((_, i) => (

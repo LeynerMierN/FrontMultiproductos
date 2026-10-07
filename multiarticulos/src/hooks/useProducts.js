@@ -49,12 +49,14 @@ export function useProducts() {
   }, []);
 
   const addProduct = useCallback(
-    async ({ nombre, precio, cantidad, imageUrl }) => {
+    async ({ nombre, precio, cantidad, imageUrl, gender, subcategory }) => {
       const payload = {
         nombre: nombre.trim(),
         precio: Number(precio),
         cantidad: Math.max(0, parseInt(cantidad, 10) || 0),
         imageUrl: imageUrl || "",
+        gender: gender || "unisex",
+        subcategory: subcategory || "",
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       };
